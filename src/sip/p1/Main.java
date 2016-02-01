@@ -98,17 +98,12 @@ public class Main {
         	img = cmdLine.getOptionValue("sexdetiiconcret");
             op = new SexdetiiConcret(img);
         }
-        /*
-        if(cmdLine.hasOption("-cmean")){
-        	String aux = cmdLine.getOptionValue("cmean");
-        	char channel = aux.toCharArray()[0];
-            op = new Mean(args[2], channel);
+        if(cmdLine.hasOption("-hpower")){ //Syntax: hpower min max img
+        	int min, max;
+        	min = Integer.parseInt(args[1]);
+        	max = Integer.parseInt(args[2]);
+            op = new Hpower(args[3], min, max);
         }
-        if(cmdLine.hasOption("-cvariance")){
-            img = cmdLine.getOptionValue("cvariance");
-            op = new Variance(img);
-        }
-        */
         return op;
 	}
 
@@ -128,9 +123,9 @@ public class Main {
 		options.addOption("pmse", "peak-mean-square error"  , true, "--peak-mean-square error [-argument=value [...]]");
 		options.addOption("snr", "signal-noise ratio"  , true, "--signal-noise-ratio [-argument=value [...]]");
 		options.addOption("histogram", "histogram"  , true, "--histogram [-argument=value [R|G|B]]");
-		options.addOption("hpower", "hpower"  , true, "--hpower [-argument=value [R|G|B]]");
-		options.addOption("hpowerconcret", "hpowerconcret"  , true, "--hpowerconcret [-argument=value [R|G|B]]");
-		//options.addOption("cmean", "cmean"  , true, "--cmean [-argument=value [R|G|B]]");
+		options.addOption("sexdetii", "sexdetii"  , true, "--sexdetii ");
+		options.addOption("sexdetiiconcret", "sexdetiiconcret"  , true, "--sexdetiiconcret ");
+		options.addOption("hpower", "hpower"  , true, "--hpower min max [-argument=value [...]]");
 		return options;
 	}
 

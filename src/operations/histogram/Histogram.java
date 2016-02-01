@@ -20,7 +20,6 @@ public class Histogram extends Operation {
 	private static final long serialVersionUID = 1L;
 	protected int channel_mask;
 	protected int[] histogram;
-	private int[] histogramImg;////////////////////
 	private float mean_val;
 	private float variance;
 	private float standar_deviation;
@@ -39,7 +38,6 @@ public class Histogram extends Operation {
 	public Histogram(String img_string, char channel) throws InterruptedException {
 		super(img_string);
 		this.histogram = new int[256];
-		this.histogramImg = new int[256];
 		switch (channel) {
 		case 'r':
 		case 'R':
@@ -53,36 +51,50 @@ public class Histogram extends Operation {
 		case 'B':
 			this.channel_mask = 3;
 			break;
+		case 'a': // All
+		case 'A':
+			this.channel_mask = 4;
+			break;
 		default:
 			break;
 		}
 	}
 
-	@Override
 	protected void executeOp() {
-		for (int i = 0; i < this.imgRows; i++) {
-			for (int j = 0; j < this.imgCols; j++) {
-				for (int k = 0; k < 4; k++) {
-					if (k == 0) {
-						this.threeDPixMod[i][j][k] = this.threeDPix[i][j][k];
-						//this.histogramImg[this.threeDPixMod[i][j][k]]++;
-					}
-					if (k == this.channel_mask) {
-						this.threeDPixMod[i][j][k] = this.threeDPix[i][j][k];
-						this.histogram[this.threeDPixMod[i][j][k]]++;
-					}
-				}
-			}
+		if(this.channel_mask != 4){ //Chosen channel
+			this.generateHistogram(channel_mask);
 		}
+		else{ //All channels
+			this.generateHistogram(1);
+			this.generateHistogram(2);
+			this.generateHistogram(3);
+		}
+		
 		this.stats();
 		this.generateGraphic();
 		this.save();
 		System.out.println(this);
 	}
 
+	private void generateHistogram(int cm) {
+		this.histogram = new int[256];
+		for (int i = 0; i < this.imgRows; i++) {
+			for (int j = 0; j < this.imgCols; j++) {
+				for (int k = 0; k < 4; k++) {
+					if (k == 0) {
+						this.threeDPixMod[i][j][k] = this.threeDPix[i][j][k];
+					}
+					if (k == cm) {
+						this.threeDPixMod[i][j][k] = this.threeDPix[i][j][k];
+						this.histogram[this.threeDPixMod[i][j][k]]++;
+					}
+				}
+			}
+		}
+	}
+
 	private void generateGraphic() {
 		final DefaultCategoryDataset dataset = new DefaultCategoryDataset();
-//		final String histo = "Histogram";
 		for(int i=0; i<this.histogram.length; i++){
 			dataset.addValue(this.histogram[i] , Integer.toString(i) , Integer.toString(i));
 		}
@@ -109,7 +121,6 @@ public class Histogram extends Operation {
 		this.calculateInformationSourceEntropy();
 	}
 
-	@Override
 	public String toString() {
 		return Constants.processingHistogram + System.lineSeparator() + "Mean: " + this.mean_val
 				+ System.lineSeparator() + "Variance: " + this.variance + System.lineSeparator() + "Standar deviation: "
