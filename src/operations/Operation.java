@@ -2,7 +2,6 @@ package operations;
 
 import java.awt.Component;
 import java.awt.Image;
-import java.awt.MediaTracker;
 import java.awt.image.BufferedImage;
 import java.awt.image.ImageObserver;
 import java.awt.image.MemoryImageSource;
@@ -23,7 +22,7 @@ public abstract class Operation extends Component {
 	 */
 	private static final long serialVersionUID = 1L;
 	
-	private Image modImg;
+	protected Image modImg;
 	protected int[] oneDPix;
 	protected int[][][] threeDPix;
 	protected int[][][] threeDPixMod;
@@ -34,7 +33,7 @@ public abstract class Operation extends Component {
 
 	public Operation(String img_string) throws InterruptedException {
 		this.load(img_string);
-		this.oneDPix = null;
+//		this.oneDPix = null;
 	}
 
 	public void performOperation(){
@@ -43,19 +42,18 @@ public abstract class Operation extends Component {
 	}
 	
 	protected abstract void executeOp();
-
+	
 	/**
 	 * Loads the pixel array on threeDPix
 	 */
 	private void load(String img_string) throws InterruptedException {
-		BufferedImage img_buff = null;
-		MediaTracker tracker;
 		System.out.println(img_string);
 		String[] auxName = img_string.split("/");
 		String fileNameAux = auxName[auxName.length-1];
 		auxName = fileNameAux.split("\\.");
 		this.fileName = auxName[0];
 		this.format = auxName[1];
+		BufferedImage img_buff = null;
 		try {
 			img_buff = ImageIO.read(getClass().getResource(img_string));
 		} catch (Exception e) {
@@ -63,21 +61,6 @@ public abstract class Operation extends Component {
 			System.exit(1);
 		}
 		this.rawImg = img_buff;
-		tracker = new MediaTracker(this);
-		tracker.addImage(rawImg, 1);
-		try {
-			if (!tracker.waitForID(1, 10000)) {
-				System.out.println("Load error.");
-				System.exit(1);
-			}
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-			System.exit(1);
-		}
-		if ((tracker.statusAll(false) & MediaTracker.ERRORED & MediaTracker.ABORTED) != 0) {
-			System.out.println("Load errored or aborted");
-			System.exit(1);
-		}
 		this.imgCols = this.rawImg.getWidth(this);
 		this.imgRows = this.rawImg.getHeight(this);
 		this.oneDPix = new int[this.imgCols * this.imgRows];
@@ -120,7 +103,7 @@ public abstract class Operation extends Component {
 		this.oneDPix = new int[x];
 	}
 	
-	private void comprobacionEstado() {
+	protected void comprobacionEstado() {
 		JFrame v = new JFrame();
 		JButton b = new JButton();
 		b.setIcon(new ImageIcon(modImg));
@@ -137,6 +120,26 @@ public abstract class Operation extends Component {
 		comprobacionEstado();
 		try {
 			File f = new File(this.fileName + "_mod." + this.format);
+			for(int i = 0; i < this.imgRows; i++){
+				for(int j = 0; j < this.imgCols; j++){
+					bi.setRGB(j, i, this.oneDPix[i*this.imgCols + j]);
+				}
+			}
+			ImageIO.write(bi, this.format, f);
+			System.out.println("-- saved");
+		} catch (IOException e) {
+			System.err.println("errooooooor");
+			e.printStackTrace();
+		}
+	}
+	
+	protected void save(String name) {
+		oneDPix = convertToOneDim(threeDPixMod, imgCols, imgRows);
+		this.modImg = createImage(new MemoryImageSource(imgCols, imgRows, oneDPix, 0, imgCols));
+		BufferedImage bi = new BufferedImage(this.imgCols, this.imgRows, BufferedImage.TYPE_INT_RGB);
+		comprobacionEstado();
+		try {
+			File f = new File(name + this.format);
 			for(int i = 0; i < this.imgRows; i++){
 				for(int j = 0; j < this.imgCols; j++){
 					bi.setRGB(j, i, this.oneDPix[i*this.imgCols + j]);
@@ -171,7 +174,7 @@ public abstract class Operation extends Component {
 		}
 	}
 
-	private int[] convertToOneDim(int[][][] data, int imgCols, int imgRows) {
+	protected int[] convertToOneDim(int[][][] data, int imgCols, int imgRows) {
 		int[] oneDPix = new int[imgCols * imgRows * 4];
 		for (int row = 0, cnt = 0; row < imgRows; row++) {
 			for (int col = 0; col < imgCols; col++) {

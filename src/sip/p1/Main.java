@@ -4,10 +4,14 @@ import operations.*;
 import operations.geometric.*;
 import operations.histogram.*;
 import filters.*;
+import fourier.FFT;
+import fourier.DFT;
+//import fourier.Fourier;
 
 public class Main {
 
 	public static void main(String[] args) {
+		long startTime = System.currentTimeMillis();
 		try {
 			Operation op = parseCommands(args);
             if(op != null)
@@ -16,8 +20,9 @@ public class Main {
             	System.out.println(Constants.HELP);
 		} catch(InterruptedException | ParseException e){
 			System.out.println(Constants.HELP);
-			//e.printStackTrace();
 		}
+		long endTime = System.currentTimeMillis() - startTime;
+		System.out.println(endTime);
 	}
 	
 	private static Operation parseCommands(String[] args) throws ParseException, InterruptedException {
@@ -98,11 +103,31 @@ public class Main {
         	img = cmdLine.getOptionValue("sexdetiiconcret");
             op = new SexdetiiConcret(img);
         }
+        if(cmdLine.hasOption("-robers2")){
+        	img = cmdLine.getOptionValue("robers2");
+            op = new Robers2(img);
+        }
         if(cmdLine.hasOption("-hpower")){ //Syntax: hpower min max img
         	int min, max;
         	min = Integer.parseInt(args[1]);
         	max = Integer.parseInt(args[2]);
             op = new Hpower(args[3], min, max);
+        }
+//        if(cmdLine.hasOption("-fft")){ //Syntax: hpower min max img
+//        	img = cmdLine.getOptionValue("fft");
+//            op = new Fourier(img);
+//        }
+//        if(cmdLine.hasOption("-ifft")){ //Syntax: hpower min max img
+//        	img = cmdLine.getOptionValue("ifft");
+//            op = new Fourier(img);
+//        }
+        if(cmdLine.hasOption("-dft")){ //Syntax: hpower min max img
+        	img = cmdLine.getOptionValue("dft");
+            op = new DFT(img);
+        }
+        if(cmdLine.hasOption("-fft")){ //Syntax: hpower min max img
+        	img = cmdLine.getOptionValue("fft");
+            op = new FFT(img);
         }
         return op;
 	}
@@ -126,6 +151,11 @@ public class Main {
 		options.addOption("sexdetii", "sexdetii"  , true, "--sexdetii ");
 		options.addOption("sexdetiiconcret", "sexdetiiconcret"  , true, "--sexdetiiconcret ");
 		options.addOption("hpower", "hpower"  , true, "--hpower min max [-argument=value [...]]");
+		options.addOption("robers2", "robers2"  , true, "--robers2 [-argument=value [...]]");
+//		options.addOption("ifft", "inversefourier"  , true, "--inversefourier [-argument=value [...]]");
+//		options.addOption("fft2", "fourier2"  , true, "--fourier2 [-argument=value [...]]");
+		options.addOption("dft", "dft"  , true, "--dft [-argument=value [...]]");
+		options.addOption("fft", "fourier"  , true, "--fourier [-argument=value [...]]");
 		return options;
 	}
 

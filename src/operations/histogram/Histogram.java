@@ -61,6 +61,7 @@ public class Histogram extends Operation {
 	}
 
 	protected void executeOp() {
+		this.generateHistogram(0);
 		if(this.channel_mask != 4){ //Chosen channel
 			this.generateHistogram(channel_mask);
 		}
@@ -69,7 +70,6 @@ public class Histogram extends Operation {
 			this.generateHistogram(2);
 			this.generateHistogram(3);
 		}
-		
 		this.stats();
 		this.generateGraphic();
 		this.save();
@@ -80,15 +80,8 @@ public class Histogram extends Operation {
 		this.histogram = new int[256];
 		for (int i = 0; i < this.imgRows; i++) {
 			for (int j = 0; j < this.imgCols; j++) {
-				for (int k = 0; k < 4; k++) {
-					if (k == 0) {
-						this.threeDPixMod[i][j][k] = this.threeDPix[i][j][k];
-					}
-					if (k == cm) {
-						this.threeDPixMod[i][j][k] = this.threeDPix[i][j][k];
-						this.histogram[this.threeDPixMod[i][j][k]]++;
-					}
-				}
+					this.threeDPixMod[i][j][cm] = this.threeDPix[i][j][cm];
+					this.histogram[this.threeDPix[i][j][cm]]++;
 			}
 		}
 	}
@@ -100,6 +93,8 @@ public class Histogram extends Operation {
 		}
 		JFreeChart barChart = ChartFactory.createBarChart("", "", "L", dataset,
 				PlotOrientation.VERTICAL, false, true, false);
+		//barChart.set
+		//renderer needed for JFreeChart color handling
 		int width = 640;
 		int height = 480;
 		File BarChart = new File("BarChart.jpeg");
