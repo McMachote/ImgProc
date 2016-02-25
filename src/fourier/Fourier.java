@@ -5,6 +5,8 @@ import org.apache.commons.math3.complex.Complex;
 public class Fourier {
 
 	private static final Complex E = new Complex(Math.E);
+	private static double magnitude_scale;
+	private static double phase_scale;
 
 	public static Complex[] loadSample(int n, int[] oneDPix) { // first row
 		Complex[] row = new Complex[n];
@@ -50,8 +52,8 @@ public class Fourier {
 		}
 	}
 
-	public static Complex W(int k, int N) {
-		return E.pow(Complex.I.multiply(new Complex((-2) * Math.PI * (k / N))));
+	public static Complex W(int N, int k) {
+		return E.pow(Complex.I.multiply((-2) * Math.PI * (k / N)));
 	}
 
 	public static int[] getPhase(Complex[][] data, int witdh, int height) {
@@ -65,9 +67,10 @@ public class Fourier {
 			}
 		}
 		double f = 255 / (Math.log(Math.PI + Math.abs(max)));
+		phase_scale = f;
 		for (int i = 0; i < height; i++) {
 			for (int j = 0; j < witdh; j++) {
-				 arr[j+i*witdh] = (int) ((int)data[i][j].getArgument()*f); // Phase = Argument
+				 arr[j+i*witdh] = (int) ((int)data[i][j].getArgument() * f); // Phase = Argument
 			}
 		}
 		return arr;
@@ -79,15 +82,18 @@ public class Fourier {
 		double max = data[0][0].getImaginary();
 		for (int i = 0; i < height; i++) {
 			for (int j = 0; j < width; j++) {
-				if (data[i][j].getImaginary() > max) {
-					max = data[i][j].getImaginary();
+				double val = Math.sqrt((Math.pow(data[i][j].getReal(), 2) + Math.pow(data[i][j].getImaginary(), 2)));
+				if (val > max) {
+					max = val;
 				}
 			}
 		}
 		double f = 255 / (Math.log(1 + Math.abs(max)));
+		magnitude_scale = f;
 		for (int i = 0; i < height; i++) {
 			for (int j = 0; j < width; j++) {
-				arr[i*width + j] = (int) (f * Math.log(1+Math.sqrt((Math.pow(data[i][j].getReal(), 2) + Math.pow(data[i][j].getImaginary(), 2)))));
+				int aux = (int) (f * Math.log(1+Math.sqrt((Math.pow(data[i][j].getReal(), 2) + Math.pow(data[i][j].getImaginary(), 2)))));
+				arr[i*width + j] = (aux<<16) | (aux<<8) | aux;
 			}
 		}
 		arr = Tools.centralize(arr, width, height);
@@ -95,54 +101,33 @@ public class Fourier {
 	}
 
 	public static Complex[] fft1d(Complex[] row, int n) {
-		Complex X[] = new Complex[(int) n];
+		Complex X[] = new Complex[n];
 		if (n > 1) {
 			// RECURSIVE CALLS /////////////////////////
-			Complex firstHalf[] = new Complex[(int) (n / 2)];
-			Complex secondHalf[] = new Complex[(int) (n / 2)];
-			for (int i = 0; i < n / 2; i++) {
-				firstHalf[i] = row[i];
+			Complex firstHalf[] = new Complex[n/2];
+			Complex secondHalf[] = new Complex[n/2];
+			for (int i = 0; i < n/2; i++) {
+				firstHalf[i] = row[2*i];
+				secondHalf[i] = row[2*i + 1];
 			}
-			for (int i = 0; i < n / 2; i++) {
-				secondHalf[i] = row[(int) (i + n / 2)];
+			firstHalf = fft1d(firstHalf, n/2);
+			secondHalf = fft1d(secondHalf, n/2);
+			// COMBINATION /////////////////////////////
+			for (int k = 0; k < n/2; k++) {
+				Complex W = E.pow( Complex.I.multiply( (-2) * Math.PI * (k/(double)(n) ) ));
+				Complex X1 = firstHalf[k];
+				Complex X2 = W.multiply(secondHalf[k]);
+				X[k] = X1.add( X2 );
+				X[k + n/2] = X1.subtract( X2 );
 			}
-			firstHalf = fft1d(firstHalf, n / 2);
-			secondHalf = fft1d(secondHalf, n / 2);
-			// COMBINATION /////////////////////////
-			for (double k = 0; k < n / 2; k++) {
-				Complex exp = E.pow(Complex.I.multiply(new Complex((-2) * Math.PI * (k / n))));
-				Complex temp = row[(int) k];
-				X[(int) k] = temp.add(exp.multiply(firstHalf[(int) k]));
-				X[(int) (k + n / 2)] = temp.subtract(exp.multiply(secondHalf[(int) k]));
-			}
-		} else {
+		}
+		else {
 			X = row;
 		}
 		return X;
 	}
 	
 	public static Complex[] ifft1d(Complex[] row, int n) {
-//		int n2 = n / 2;
-//		complex *tabe = new complex[n2];
-//		complex *tabo = new complex[n2];
-//		complex e, o;
-//		if (n == 1) return;
-//		for (int x = 0; x < n2; ++x){
-//			e = row[x]+row[x+n2];
-//			o = (row[x] - row[x + n2]);
-//			o=o*W(n,x);
-//			tabe[x] = e;
-//			tabo[x] = o;
-//		}
-//		
-//		fft1d(tabe, n2);
-//		fft1d(tabo, n2);
-//
-//		for (int x = 0; x < n2; ++x){
-//			row[2 * x] = tabe[x];
-//			row[2 * x + 1] = tabo[x];
-//		}
-		
 		Complex X[] = new Complex[(int) n];
 		if (n > 1) {
 			// RECURSIVE CALLS /////////////////////////
@@ -238,6 +223,32 @@ public class Fourier {
 		return data;
 	}
 	
+	public static Complex[][] fft2d(Complex[][] data, int width, int height) {
+		Complex[] arr = new Complex[width];
+		// EVERY ROW
+		for (int i = 0; i < height; i++) {
+			for (int j = 0; j < width; j++) {
+				arr[j] = data[i][j];
+			}
+			arr = Fourier.fft1d(arr, width);
+			for (int j = 0; j < height; j++) {// replace
+				data[i][j] = arr[j];
+			}
+		}
+		// EVERY COLUMN
+		arr = new Complex[height];
+		for (int i = 0; i < width; i++) {
+			for (int j = 0; j < height; j++) {
+				arr[j] = data[j][i];
+			}
+			arr = fft1d(arr, height);
+			for (int j = 0; j < height; j++) {
+				data[j][i] = arr[j];
+			}
+		}
+		return data;
+	}
+	
 	public static Complex[][] idft2d(Complex[][] data, int width, int height) {
 		Complex[] aux = new Complex[width];
 		// EVERY ROW
@@ -263,5 +274,42 @@ public class Fourier {
 		}
 		return data;
 	}
+	
+	public static Complex[][] ifft2d(Complex[][] data, int width, int height) {
+		Complex[] aux = new Complex[width];
+		// EVERY ROW
+		for (int i = 0; i < height; i++) {
+			for (int j = 0; j < width; j++) {
+				aux[j] = data[i][j];
+			}
+			aux = Fourier.ifft1d(aux, width);
+			for (int j = 0; j < height; j++) {// replace
+				data[i][j] = aux[j];
+			}
+		}
+		// EVERY COLUMN
+		aux = new Complex[height];
+		for (int i = 0; i < width; i++) {
+			for (int j = 0; j < height; j++) {
+				aux[j] = data[j][i];
+			}
+			aux = Fourier.ifft1d(aux, height);
+			for (int j = 0; j < height; j++) {
+				data[j][i] = aux[j];
+			}
+		}
+		return data;
+	}
+	
+	public static Complex[][] convolution(Complex[][] mask, Complex[][] ft, int width, int height){	//white remains
+		for (int i = 0; i < height; i++){
+			for (int j = 0; j < width; j++){
+				ft[i][j] = ft[i][j].multiply(mask[i][j]); 
+			}
+		}
+		return ft;
+	}
+	
+//	ft[i][j] = new Complex(Math.sqrt(Math.pow((i-height)/2, 2) + Math.pow((j-width)/2, 2)) );
 
 }

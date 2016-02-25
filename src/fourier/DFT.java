@@ -17,6 +17,8 @@ public class DFT extends Operation {
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
+	private Complex[][] magnitude;
+	private Complex[][] phase;
 
 	public DFT(String img_string) throws InterruptedException {
 		super(img_string);
@@ -34,7 +36,6 @@ public class DFT extends Operation {
 		
 		//	OPERATIONS (over df_spectrum)
 		
-		
 		//	IDFT + toInt
 		System.out.println("Performing IDFT...");
 		Complex[][] aux = Fourier.idft2d(dft_result, this.imgRows, this.imgCols);
@@ -46,14 +47,29 @@ public class DFT extends Operation {
 	}
 
 	private void saveSpectrum(Complex[][] data, int width, int height) {
-		Tools.saveMagnitude( Fourier.getMagnitude(data, width, height), width, height, this.fileName );
-		Tools.savePhase( Fourier.getPhase(data, width, height), width, height, this.fileName );
+		int[] temp = Fourier.getMagnitude(data, width, height);
+		this.magnitude = new Complex[width][height];
+		for(int i=0;i<height; i++){
+			for(int j=0; j<width;j++){
+				this.magnitude[i][j] = new Complex(temp[i*width + j]);
+			}
+		}
+		Tools.saveMagnitude( temp, width, height, this.fileName );
+		
+		int[] temp2 = Fourier.getPhase(data, width, height);
+		this.phase = new Complex[width][height];
+		for(int i=0;i<height; i++){
+			for(int j=0; j<width;j++){
+				this.phase[i][j] = new Complex(temp2[i*width + j]);
+			}
+		}
+		Tools.savePhase( temp2, width, height, this.fileName );
 	}
 	
 	protected void save() {
 		this.modImg = createImage(new MemoryImageSource(imgCols, imgRows, oneDPix, 0, imgCols));
 		BufferedImage bi = new BufferedImage(this.imgCols, this.imgRows, BufferedImage.TYPE_INT_RGB);
-		comprobacionEstado();
+//		comprobacionEstado();
 		try {
 			File f = new File(this.fileName + "_mod." + this.format);
 			for(int i = 0; i < this.imgRows; i++){

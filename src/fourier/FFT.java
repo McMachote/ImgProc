@@ -19,8 +19,8 @@ public class FFT extends Operation {
 	protected void executeOp() {
 		//	FFT
 		System.out.println("Performing FFT...");
-		Complex[] row = Fourier.loadSample(this.imgCols, this.oneDPix);
-		Complex[] fft_result = Fourier.fft1d(row, this.imgCols);
+		Complex[][] sample = Fourier.loadSample(this.imgCols, this.imgRows, this.oneDPix);
+		Complex[][] fft_result = Fourier.fft2d(sample, this.imgCols, this.imgRows);
 		System.out.println("FFT finished");
 		
 		//	OPERATIONS (over df_spectrum)
@@ -31,13 +31,13 @@ public class FFT extends Operation {
 //		System.out.println("IFFT finished");
 		
 		
-
 		////////////////Checking
-		Complex[] dft_result = Fourier.dft1d(row, this.imgCols);
-		
-		int[] temp = Tools.toIntegerArr(fft_result, this.imgCols);
-		int[] temp2 = Tools.toIntegerArr(dft_result, this.imgCols);
-		Tools.checkArrs(temp, temp2, this.imgCols);
+//		Complex[][] dft_result = Fourier.dft2d(sample, this.imgCols, this.imgRows);
+//		
+		int[] temp = Tools.toIntegerArr(fft_result, this.imgCols, this.imgRows);
+//		int[] temp2 = Tools.toIntegerArr(dft_result, this.imgCols, this.imgRows);
+//		Tools.checkArrs(temp2, temp, this.imgCols);
+		saveSpectrum(fft_result, this.imgCols, this.imgRows);
 //		this.save();
 	}
 

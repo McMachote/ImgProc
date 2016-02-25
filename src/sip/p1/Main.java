@@ -5,6 +5,7 @@ import operations.geometric.*;
 import operations.histogram.*;
 import filters.*;
 import fourier.FFT;
+import fourier.filters_in_frecuency_domain.F1_LowPassFilter;
 import fourier.DFT;
 //import fourier.Fourier;
 
@@ -113,14 +114,7 @@ public class Main {
         	max = Integer.parseInt(args[2]);
             op = new Hpower(args[3], min, max);
         }
-//        if(cmdLine.hasOption("-fft")){ //Syntax: hpower min max img
-//        	img = cmdLine.getOptionValue("fft");
-//            op = new Fourier(img);
-//        }
-//        if(cmdLine.hasOption("-ifft")){ //Syntax: hpower min max img
-//        	img = cmdLine.getOptionValue("ifft");
-//            op = new Fourier(img);
-//        }
+        //	TASK-4_FOURIER
         if(cmdLine.hasOption("-dft")){ //Syntax: hpower min max img
         	img = cmdLine.getOptionValue("dft");
             op = new DFT(img);
@@ -128,6 +122,44 @@ public class Main {
         if(cmdLine.hasOption("-fft")){ //Syntax: hpower min max img
         	img = cmdLine.getOptionValue("fft");
             op = new FFT(img);
+        }
+        //	FILTERS
+        if(cmdLine.hasOption("-f1")){ //Syntax: hpower min max img
+        	if(args.length == 3){
+        		int radix;
+            	radix = Integer.parseInt(args[1]);
+                op = new F1_LowPassFilter(args[2], radix);
+        	}
+        }
+        if(cmdLine.hasOption("-f2")){ //Syntax: hpower min max img
+        	int min, max;
+        	min = Integer.parseInt(args[1]);
+        	max = Integer.parseInt(args[2]);
+            op = new Hpower(args[3], min, max);
+        }
+        if(cmdLine.hasOption("-f3")){ //Syntax: hpower min max img
+        	int min, max;
+        	min = Integer.parseInt(args[1]);
+        	max = Integer.parseInt(args[2]);
+            op = new Hpower(args[3], min, max);
+        }
+        if(cmdLine.hasOption("-f4")){ //Syntax: hpower min max img
+        	int min, max;
+        	min = Integer.parseInt(args[1]);
+        	max = Integer.parseInt(args[2]);
+            op = new Hpower(args[3], min, max);
+        }
+        if(cmdLine.hasOption("-f5")){ //Syntax: hpower min max img
+        	int min, max;
+        	min = Integer.parseInt(args[1]);
+        	max = Integer.parseInt(args[2]);
+            op = new Hpower(args[3], min, max);
+        }
+        if(cmdLine.hasOption("-f6")){ //Syntax: hpower min max img
+        	int min, max;
+        	min = Integer.parseInt(args[1]);
+        	max = Integer.parseInt(args[2]);
+            op = new Hpower(args[3], min, max);
         }
         return op;
 	}
@@ -154,8 +186,15 @@ public class Main {
 		options.addOption("robers2", "robers2"  , true, "--robers2 [-argument=value [...]]");
 //		options.addOption("ifft", "inversefourier"  , true, "--inversefourier [-argument=value [...]]");
 //		options.addOption("fft2", "fourier2"  , true, "--fourier2 [-argument=value [...]]");
+		//	FOURIER
 		options.addOption("dft", "dft"  , true, "--dft [-argument=value [...]]");
 		options.addOption("fft", "fourier"  , true, "--fourier [-argument=value [...]]");
+		options.addOption("f1", "fourier"  , true, "--fourier [-argument=value [...]]");
+		options.addOption("f2", "fourier"  , true, "--fourier [-argument=value [...]]");
+		options.addOption("f3", "fourier"  , true, "--fourier [-argument=value [...]]");
+		options.addOption("f4", "fourier"  , true, "--fourier [-argument=value [...]]");
+		options.addOption("f5", "fourier"  , true, "--fourier [-argument=value [...]]");
+		options.addOption("f6", "fourier"  , true, "--fourier [-argument=value [...]]");
 		return options;
 	}
 

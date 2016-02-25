@@ -35,8 +35,7 @@ public class Tools {
 			File f = new File(fileName + "_magnitude." + format);
 			for(int i = 0; i < height; i++){
 				for(int j = 0; j < width; j++){
-					int aux = (data[i*width + j]<<16) | (data[i*width + j]<<8) | (data[i*width + j]) ;// ONLY rgB if not shifted... WHY?!?!?!
-					bi.setRGB(j, i, aux);
+					bi.setRGB(j, i, data[i*width + j]);
 				}
 			}
 			ImageIO.write(bi, format, f);
@@ -77,6 +76,36 @@ public class Tools {
 		return arr;
 	}
 	
+	public static Complex[][] centralize(Complex[][] data, int width, int height) {
+		Complex cosa[][] = new Complex[height][width]; 
+		for(int i=0; i<height; i++){
+			for(int j=0; j<width; j++){
+				cosa[i][j] = data[i][j];
+			}
+		}
+		Complex tmp;
+		for(int i=0; i<height/2; i++){//horizontal swap		//XOR SWAP!!!
+			for(int j=0; j<width; j++){
+				tmp = cosa[i][j];
+				cosa[i][j] = cosa[i+height/2][j];
+				cosa[i+height/2][j] = tmp;
+			}
+		}
+		for(int i=0; i<height; i++){//horizontal swap		//XOR SWAP!!!
+			for(int j=0; j<width/2; j++){
+				tmp = cosa[i][j];
+				cosa[i][j] = cosa[i][j+width/2];
+				cosa[i][j+width/2] = tmp;
+			}
+		}
+		for(int i=0; i<height; i++){
+			for(int j=0; j<width; j++){
+				data[i][j] = cosa[i][j];
+			}
+		}
+		return data;
+	}
+
 	public static int[] toIntegerArr(Complex[] row, int n) {
 		int[] result = new int[n];
 		for (int i = 0; i < n; i++) {
@@ -89,7 +118,10 @@ public class Tools {
 		int[] result = new int[width*height];
 		for (int i = 0; i < height; i++) {
 			for (int j = 0; j < width; j++) {
-				result[j + i*width] = (int) Math.round(data[i][j].getReal());
+			//	System.out.println((int) Math.round(data[i][j].getReal()));
+				int vvv = ((int) Math.floor(data[i][j].getReal()	))/(256*256);
+				vvv = vvv + vvv*256 + vvv*256*256;
+				result[j + i*width] = vvv;//((int) Math.round(data[i][j].getReal()))/(256*256);
 			}
 		}
 		return result;
@@ -125,6 +157,16 @@ public class Tools {
 				}
 			}
 		}
+	}
+
+	public static Complex[][] toComplex2DArr(int[] input, int width, int height) {
+		Complex[][] arr = new Complex[height][width];
+		for(int i=0; i<height; i++){
+			for(int j=0; j<width; j++){
+				arr[i][j] = new Complex(input[i*width + j]);
+			}
+		}
+		return arr;
 	}
 	
 }
