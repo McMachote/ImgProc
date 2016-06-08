@@ -5,8 +5,8 @@ import org.apache.commons.math3.complex.Complex;
 public class Fourier {
 
 	private static final Complex E = new Complex(Math.E);
-	private static double magnitude_scale;
-	private static double phase_scale;
+//	private static double magnitude_scale;
+//	private static double phase_scale;
 
 	public static Complex[] loadSample(int n, int[] oneDPix) { // first row
 		Complex[] row = new Complex[n];
@@ -67,7 +67,7 @@ public class Fourier {
 			}
 		}
 		double f = 255 / (Math.log(Math.PI + Math.abs(max)));
-		phase_scale = f;
+//		phase_scale = f;
 		for (int i = 0; i < height; i++) {
 			for (int j = 0; j < witdh; j++) {
 				 arr[j+i*witdh] = (int) ((int)data[i][j].getArgument() * f); // Phase = Argument
@@ -89,7 +89,7 @@ public class Fourier {
 			}
 		}
 		double f = 255 / (Math.log(1 + Math.abs(max)));
-		magnitude_scale = f;
+//		magnitude_scale = f;
 		for (int i = 0; i < height; i++) {
 			for (int j = 0; j < width; j++) {
 				int aux = (int) (f * Math.log(1+Math.sqrt((Math.pow(data[i][j].getReal(), 2) + Math.pow(data[i][j].getImaginary(), 2)))));

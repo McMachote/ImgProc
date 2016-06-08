@@ -1,18 +1,14 @@
 package fourier.filters_in_frecuency_domain;
 
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.Graphics2D;
+//import java.awt.Color;
+//import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
-import java.awt.image.MemoryImageSource;
 import java.io.File;
 import java.io.IOException;
 
 import javax.imageio.ImageIO;
 
 import org.apache.commons.math3.complex.Complex;
-
-import com.sun.glass.ui.CommonDialogs.Type;
 
 import fourier.Fourier;
 import fourier.Tools;
@@ -26,7 +22,6 @@ public class F1_LowPassFilter extends Operation {
 	private static final long serialVersionUID = 1L;
 
 	private Complex[][] data;
-	private int n;
 	private int[] magnitude;
 	private int[] phase;
 	private int radix;
@@ -35,13 +30,12 @@ public class F1_LowPassFilter extends Operation {
 	public F1_LowPassFilter(String img_string, int radix) throws InterruptedException {
 		super(img_string);
 		this.radix = radix;
-		this.n = this.imgCols * this.imgRows;
 		this.sample = Fourier.loadSample(this.imgCols, this.imgRows, this.oneDPix);
 	}
 
 	@Override
 	protected void executeOp() {
-		Complex[][] mask = this.generateMaskComplex(this.imgCols, this.imgRows, this.radix);
+//		Complex[][] mask = this.generateMaskComplex(this.imgCols, this.imgRows, this.radix);
 		this.data = Fourier.fft2d(sample, this.imgCols, this.imgRows);
 	
 	//	saveSpectrum(this.data, this.imgCols, this.imgRows);
@@ -80,38 +74,38 @@ public class F1_LowPassFilter extends Operation {
 		Tools.savePhase( this.phase, width, height, this.fileName );
 	}
 
-	private int[][] generateMask(int width, int height, int radix2) {
-		BufferedImage bi = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
-		Graphics2D g = bi.createGraphics();
-		g.setColor(Color.WHITE);
-		g.fillOval(width / 2 - radix, height / 2 - radix, radix * 2, radix * 2);
-		try {
-			File f = new File("F1mask." + this.format);
-			ImageIO.write(bi, this.format, f);
-			System.out.println("-- mask saved");
-		} catch (IOException e) {
-			System.err.println("errooooooor");
-			e.printStackTrace();
-		}
-		int[][] mask = new int[height][width];
-		for (int i = 0; i < height; i++) {
-			for (int j = 0; j < width; j++) {
-				mask[i][j] = bi.getRGB(j, i);
-			}
-		}
-		return mask;
-	}
+//	private int[][] generateMask(int width, int height, int radix2) {
+//		BufferedImage bi = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
+//		Graphics2D g = bi.createGraphics();
+//		g.setColor(Color.WHITE);
+//		g.fillOval(width / 2 - radix, height / 2 - radix, radix * 2, radix * 2);
+//		try {
+//			File f = new File("F1mask." + this.format);
+//			ImageIO.write(bi, this.format, f);
+//			System.out.println("-- mask saved");
+//		} catch (IOException e) {
+//			System.err.println("errooooooor");
+//			e.printStackTrace();
+//		}
+//		int[][] mask = new int[height][width];
+//		for (int i = 0; i < height; i++) {
+//			for (int j = 0; j < width; j++) {
+//				mask[i][j] = bi.getRGB(j, i);
+//			}
+//		}
+//		return mask;
+//	}
 	
-	private Complex[][] generateMaskComplex(int width, int height, int radix2) {
-		int[][] mask = generateMask(width, height, radix2);
-		Complex[][] arr = new Complex[height][width];
-		for(int i=0; i<height; i++){
-			for(int j=0; j<width; j++){
-				arr[i][j] = new Complex(mask[i][j]);
-			}
-		}
-		return arr;
-	}
+//	private Complex[][] generateMaskComplex(int width, int height, int radix2) {
+//		int[][] mask = generateMask(width, height, radix2);
+//		Complex[][] arr = new Complex[height][width];
+//		for(int i=0; i<height; i++){
+//			for(int j=0; j<width; j++){
+//				arr[i][j] = new Complex(mask[i][j]);
+//			}
+//		}
+//		return arr;
+//	}
 
 	protected void save() {
 		BufferedImage bi = new BufferedImage(this.imgCols, this.imgRows, BufferedImage.TYPE_INT_RGB);

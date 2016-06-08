@@ -34,7 +34,7 @@ public class FFT extends Operation {
 		////////////////Checking
 //		Complex[][] dft_result = Fourier.dft2d(sample, this.imgCols, this.imgRows);
 //		
-		int[] temp = Tools.toIntegerArr(fft_result, this.imgCols, this.imgRows);
+//		int[] temp = Tools.toIntegerArr(fft_result, this.imgCols, this.imgRows);
 //		int[] temp2 = Tools.toIntegerArr(dft_result, this.imgCols, this.imgRows);
 //		Tools.checkArrs(temp2, temp, this.imgCols);
 		saveSpectrum(fft_result, this.imgCols, this.imgRows);

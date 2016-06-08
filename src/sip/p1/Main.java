@@ -167,35 +167,35 @@ public class Main {
             max = Integer.parseInt(args[2]);
             op = new Hpower(args[3], min, max);
         }
-        ////////        TASK 3
-        if (cmdLine.hasOption("-dilation")) { // Syntax: hpower min max img
+        //////// TASK 3
+        if (cmdLine.hasOption("-dilation")) {
             img = cmdLine.getOptionValue("dilation");
             op = new Dilation(img);
         }
-        if (cmdLine.hasOption("-erosion")) { // Syntax: hpower min max img
+        if (cmdLine.hasOption("-erosion")) {
             img = cmdLine.getOptionValue("erosion");
             op = new Erosion(img);
         }
-        if (cmdLine.hasOption("-opening")) { // Syntax: hpower min max img
+        if (cmdLine.hasOption("-opening")) {
             img = cmdLine.getOptionValue("opening");
             op = new Opening(img);
         }
-        if (cmdLine.hasOption("-closing")) { // Syntax: hpower min max img
+        if (cmdLine.hasOption("-closing")) {
             img = cmdLine.getOptionValue("closing");
             op = new Closing(img);
         }
-        if (cmdLine.hasOption("-hmt")) { // Syntax: hpower min max img
+        if (cmdLine.hasOption("-hmt")) {
             img = cmdLine.getOptionValue("hmt");
             op = new HMTtransform(img);
         }
-        if (cmdLine.hasOption("-m3")) { // Syntax: hpower min max img
+        if (cmdLine.hasOption("-m3")) {
             img = cmdLine.getOptionValue("m3");
             op = new M3(img);
         }
-        options.addOption("opening", "opening", true, "--opening [-argument=value [...]]");
-        options.addOption("closing", "closing", true, "--closing [-argument=value [...]]");
-        options.addOption("hmt", "hmt", true, "--hmt [-argument=value [...]]");
-        options.addOption("m3", "m3", true, "--m3 [-argument=value [...]]");
+        if (cmdLine.hasOption("-growing")) { // segmentation
+            img = cmdLine.getOptionValue("growing");
+            op = new Growing(img);
+        }
         return op;
     }
 
@@ -219,13 +219,14 @@ public class Main {
         options.addOption("sexdetiiconcret", "sexdetiiconcret", true, "--sexdetiiconcret ");
         options.addOption("hpower", "hpower", true, "--hpower min max [-argument=value [...]]");
         options.addOption("robers2", "robers2", true, "--robers2 [-argument=value [...]]");
-        // TASK 3 - MORPHOLOGICAL + SEGMENTATION 
+        // TASK 3 - MORPHOLOGICAL + SEGMENTATION
         options.addOption("dilation", "dilation", true, "--dilation [-argument=value [...]]");
         options.addOption("erosion", "erosion", true, "--erosion [-argument=value [...]]");
         options.addOption("opening", "opening", true, "--opening [-argument=value [...]]");
         options.addOption("closing", "closing", true, "--closing [-argument=value [...]]");
         options.addOption("hmt", "hmt", true, "--hmt [-argument=value [...]]");
         options.addOption("m3", "m3", true, "--m3 [-argument=value [...]]");
+        options.addOption("growing", "growing", true, "--growing [-argument=value [...]]"); // segmentation
         // TASK 4 - FOURIER
         options.addOption("dft", "dft", true, "--dft [-argument=value [...]]");
         options.addOption("fft", "fourier", true, "--fourier [-argument=value [...]]");

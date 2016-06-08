@@ -12,11 +12,9 @@ public class F6_PhaseModifyingFilter extends Operation {
 	 */
 	private static final long serialVersionUID = 1L;
 	private Complex[][] data;
-	private int n;
 
 	public F6_PhaseModifyingFilter(String img_string) throws InterruptedException {
 		super(img_string);
-		this.n = this.imgCols*this.imgRows;
 		Complex[][] sample = Fourier.loadSample(this.imgCols, this.imgRows, oneDPix);
 		data = Fourier.dft2d(sample, this.imgCols, this.imgRows);
 	}
