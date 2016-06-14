@@ -15,7 +15,7 @@ public class M3 extends Operation {
 
     @Override
     protected void executeOp() {
-        int x = 73, y = 98;
+        int x = 189, y = 120;
         // generate initial image X0 in the destination image
         int[][][] initialPoint = new int[this.imgRows][this.imgCols][4];
 

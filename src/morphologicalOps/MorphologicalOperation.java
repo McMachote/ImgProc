@@ -29,10 +29,10 @@ public class MorphologicalOperation {
                         destination[i][j + 1][k] = 0;
                         destination[i + 1][j - 1][k] = 0;
                         destination[i + 1][j][k] = 0;
-                        destination[i + 1][j + 1][k] = 0;
+//                        destination[i + 1][j + 1][k] = 0;
                     } else {
-                        // destination[i][j][k] = source[i][j][k]; // try
-                        // destination[i][j][k] = 255; //quitted to m3
+//                         destination[i][j][k] = source[i][j][k]; // try
+//                         destination[i][j][k] = 255; //quitted to m3
                     }
                 }
             }
@@ -66,13 +66,20 @@ public class MorphologicalOperation {
         for (int i = 1; i < height - 1; i++) {
             for (int j = 1; j < width - 1; j++) {
                 for (int k = 0; k < 4; k++) {
-                    if (k != 0 && source[i - 1][j - 1][k] == 0 && source[i - 1][j][k] == 0
-                            && source[i - 1][j + 1][k] == 0 && source[i][j - 1][k] == 0 && source[i][j][k] == 0
-                            && source[i][j + 1][k] == 0 && source[i + 1][j - 1][k] == 0 && source[i + 1][j][k] == 0
-                            && source[i + 1][j + 1][k] == 0) {
-                        // default value or k
+                    if (k != 0 &&
+                            source[i - 1][j - 1][k] == 0 &&
+                            source[i - 1][j][k] == 0 &&
+                            source[i - 1][j + 1][k] == 0 && 
+                            source[i][j - 1][k] == 0 && 
+                            source[i][j][k] == 0 && 
+                            source[i][j + 1][k] == 0 && 
+                            source[i + 1][j - 1][k] == 0 && 
+                            source[i + 1][j][k] == 0 
+                          &&  source[i + 1][j + 1][k] == 0
+                            ) {
+                        destination[i][j][k] = 0;
                     } else {
-                        destination[i][j][k] = 255;
+//                        destination[i][j][k] = 255;
                     }
                 }
             }
@@ -83,7 +90,7 @@ public class MorphologicalOperation {
         if (!sameImgs(img, prev, height, width)) {
             // DILATION
             int[][][] tmp = newImage(height, width);
-            dilation2(img, tmp, height, width);
+            dilation(img, tmp, height, width);
             // INTERSECTION
             int[][][] img2 = newImage(height, width);
             img2 = intersection(tmp, original, height, width);
@@ -95,7 +102,7 @@ public class MorphologicalOperation {
 
     public static int[][][] m3(int[][][] img, int[][][] original, int height, int width) {
         int[][][] tmp = newImage(height, width);
-        dilation2(img, tmp, height, width);
+        dilation(img, tmp, height, width);
         int[][][] img2 = newImage(height, width);
         img2 = intersection(tmp, original, height, width);
         return m3(img2, img, original, height, width);
